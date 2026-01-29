@@ -1,0 +1,36 @@
+{
+  "name": "unterrichtsplaner",
+  "version": "0.0.0",
+  "description": "Ein Tool zur Planung von Unterrichtseinheiten und Erstellung von Lehrmaterial",
+  "main": "app.js",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "test": "echo No tests defined jet",
+    "prepare": "husky"
+  },
+  "author": "Philipp Just",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.38.0",
+    "dotenv": "^17.2.3",
+    "zod": "^4.3.6"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  }
+}
