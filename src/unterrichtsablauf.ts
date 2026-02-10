@@ -16,7 +16,21 @@ const unterrichtsablaufSchema = z.object({
   sicherungsphase: z.array(aktion).describe('Sicherungsphase Aktionen'),
 })
 
-const generatePrompt = () =>
+const _anfrageSchema = z.object({
+  fach: z.string().describe('Fach der Unterrichtseinheit'),
+  themengebiet: z.string().describe('Themengebiet der Unterrichtseinheit'),
+  zielsetzung: z.string().describe('Zielsetzung der Unterrichtseinheit'),
+  dauer: z.int().describe('Dauer der Unterrichtseinheit in Minuten'),
+  klassengroesse: z
+    .int()
+    .describe('Klassengröße (z.B. Einzelunterricht, 20 Schüler)'),
+  klassenstufe: z.int().describe('Klassenstufe (z.B. 8)'),
+  schulform: z.string().describe('Schulform (z.B. Oberschule)'),
+})
+
+type Anfrage = z.infer<typeof _anfrageSchema>
+
+const generatePrompt = (anfrage: Anfrage) =>
   `# Unterrichtsvorbereitung
 
 Du bist eine Lehrkraft an einer deutschen Schule und musst eine Unterrichtseinheit vorbereiten.
@@ -24,19 +38,19 @@ Erstelle zunächst einen Ablaufplan inklusive Zeitplan mit den Phasen Einstieg, 
 Berücksichtige die Schulform, Klassenstufe und Klassengröße.
 
 Hier sind deine Rahmenbedingungen:
-- Fach: Mathematik
-- Themengebiet: Trigonometrie
-- Zielsetzung der Unterrichtseinheit: Festigung von Sinus, Kosinus, Tangens und des Sinussatzes
-- Dauer der Unterrichtseinheit: 45 Minuten
-- Klassengröße: Einzelunterricht
-- Klassenstufe: 8
-- Schulform: Oberschule
+- Fach: ${anfrage.fach}
+- Themengebiet: ${anfrage.themengebiet}
+- Zielsetzung der Unterrichtseinheit: ${anfrage.zielsetzung}
+- Dauer der Unterrichtseinheit: ${anfrage.dauer} Minuten
+- Klassengröße: ${anfrage.klassengroesse} Schüler
+- Klassenstufe: ${anfrage.klassenstufe}
+- Schulform: ${anfrage.schulform}
 `
 
-export const generateUnterrichtsablauf = async () => {
+export const generateUnterrichtsablauf = async (anfrage: Anfrage) => {
   const response = await getGeminiClient().models.generateContent({
     model: 'gemini-2.5-flash',
-    contents: generatePrompt(),
+    contents: generatePrompt(anfrage),
     config: {
       responseMimeType: 'application/json',
       responseJsonSchema: unterrichtsablaufSchema.toJSONSchema(),

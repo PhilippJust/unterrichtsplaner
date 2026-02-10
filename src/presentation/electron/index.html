@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unterrichtsplaner</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; }
+        .container { padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Unterrichtsplaner</h1>
+        <form id="planer-form">
+            <div class="form-group">
+                <label for="fach">Fach</label>
+                <input type="text" id="fach" name="fach" required>
+            </div>
+            <div class="form-group">
+                <label for="themengebiet">Themengebiet</label>
+                <input type="text" id="themengebiet" name="themengebiet" required>
+            </div>
+            <div class="form-group">
+                <label for="zielsetzung">Zielsetzung</label>
+                <input type="text" id="zielsetzung" name="zielsetzung" required>
+            </div>
+            <div class="form-group">
+                <label for="dauer">Dauer (in Minuten)</label>
+                <input type="number" id="dauer" name="dauer" required>
+            </div>
+            <div class="form-group">
+                <label for="klassengroesse">Klassengröße</label>
+                <input type="text" id="klassengroesse" name="klassengroesse" required>
+            </div>
+            <div class="form-group">
+                <label for="klassenstufe">Klassenstufe</label>
+                <input type="number" id="klassenstufe" name="klassenstufe" required>
+            </div>
+            <div class="form-group">
+                <label for="schulform">Schulform</label>
+                <input type="text" id="schulform" name="schulform" required>
+            </div>
+            <button type="submit">Plan erstellen</button>
+        </form>
+
+        <div id="results">
+            <h2 id="thema"></h2>
+            <h3>Lernziele</h3>
+            <ul id="lernziele"></ul>
+
+            <h3>Einstiegsphase</h3>
+            <table id="einstiegsphase">
+                <thead>
+                    <tr>
+                        <th>Dauer</th>
+                        <th>Ziel</th>
+                        <th>Beschreibung</th>
+                        <th>Material</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <h3>Erarbeitungsphase</h3>
+            <table id="erarbeitungsphase">
+                <thead>
+                    <tr>
+                        <th>Dauer</th>
+                        <th>Ziel</th>
+                        <th>Beschreibung</th>
+                        <th>Material</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <h3>Sicherungsphase</h3>
+            <table id="sicherungsphase">
+                <thead>
+                    <tr>
+                        <th>Dauer</th>
+                        <th>Ziel</th>
+                        <th>Beschreibung</th>
+                        <th>Material</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
