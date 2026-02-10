@@ -8,13 +8,17 @@ const aktion = z.object({
   material: z.string().describe('Benötigtes Material für die Aktion'),
 })
 
-const unterrichtsablaufSchema = z.object({
+export type Aktion = z.infer<typeof aktion>
+
+const unterrichtsablaufResult = z.object({
   thema: z.string().describe('Thema der Unterrichtseinheit'),
   lernziele: z.array(z.string()).describe('Lernziele der Unterrichtseinheit'),
   einstiegsphase: z.array(aktion).describe('Einstiegsphase Aktionen'),
   erarbeitungsphase: z.array(aktion).describe('Erarbeitungsphase Aktionen'),
   sicherungsphase: z.array(aktion).describe('Sicherungsphase Aktionen'),
 })
+
+export type UnterrichtsablaufResult = z.infer<typeof unterrichtsablaufResult>
 
 const _anfrageSchema = z.object({
   fach: z.string().describe('Fach der Unterrichtseinheit'),
@@ -28,9 +32,9 @@ const _anfrageSchema = z.object({
   schulform: z.string().describe('Schulform (z.B. Oberschule)'),
 })
 
-type Anfrage = z.infer<typeof _anfrageSchema>
+export type UnterrichtsablaufAnfrage = z.infer<typeof _anfrageSchema>
 
-const generatePrompt = (anfrage: Anfrage) =>
+const generatePrompt = (anfrage: UnterrichtsablaufAnfrage) =>
   `# Unterrichtsvorbereitung
 
 Du bist eine Lehrkraft an einer deutschen Schule und musst eine Unterrichtseinheit vorbereiten.
@@ -47,13 +51,17 @@ Hier sind deine Rahmenbedingungen:
 - Schulform: ${anfrage.schulform}
 `
 
-export const generateUnterrichtsablauf = async (anfrage: Anfrage) => {
+export const generateUnterrichtsablauf = async (
+  anfrage: UnterrichtsablaufAnfrage
+) => {
+  console.log('Anfrage:', JSON.stringify(anfrage, null, 2))
+
   const response = await getGeminiClient().models.generateContent({
     model: 'gemini-2.5-flash',
     contents: generatePrompt(anfrage),
     config: {
       responseMimeType: 'application/json',
-      responseJsonSchema: unterrichtsablaufSchema.toJSONSchema(),
+      responseJsonSchema: unterrichtsablaufResult.toJSONSchema(),
     },
   })
 
@@ -63,5 +71,5 @@ export const generateUnterrichtsablauf = async (anfrage: Anfrage) => {
 
   console.log('Rohantwort vom Modell:', JSON.stringify(response, null, 2))
 
-  return JSON.parse(response.text) as z.infer<typeof unterrichtsablaufSchema>
+  return JSON.parse(response.text) as z.infer<typeof unterrichtsablaufResult>
 }

@@ -4,7 +4,7 @@
   "description": "Ein Tool zur Planung von Unterrichtseinheiten und Erstellung von Lehrmaterial",
   "main": "app.js",
   "scripts": {
-    "start:electron": "cp src/presentation/electron/index.html dist/presentation/electron/index.html && tsc && electron dist/presentation/electron/app.js --ozone-platform=x11",
+    "start:electron": "cp src/presentation/electron/index.html dist/presentation/electron/index.html && tsc && ELECTRON_ENABLE_LOGGING=1 electron dist/presentation/electron/app.js --ozone-platform=x11",
     "test": "echo No tests defined jet",
     "prepare": "husky"
   },
