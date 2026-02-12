@@ -10,7 +10,7 @@ const aktion = z.object({
 
 export type Aktion = z.infer<typeof aktion>
 
-const unterrichtsablaufResult = z.object({
+const unterrichtsablauf = z.object({
   thema: z.string().describe('Thema der Unterrichtseinheit'),
   lernziele: z.array(z.string()).describe('Lernziele der Unterrichtseinheit'),
   einstiegsphase: z.array(aktion).describe('Einstiegsphase Aktionen'),
@@ -18,7 +18,7 @@ const unterrichtsablaufResult = z.object({
   sicherungsphase: z.array(aktion).describe('Sicherungsphase Aktionen'),
 })
 
-export type UnterrichtsablaufResult = z.infer<typeof unterrichtsablaufResult>
+export type Unterrichtsablauf = z.infer<typeof unterrichtsablauf>
 
 const _anfrageSchema = z.object({
   fach: z.string().describe('Fach der Unterrichtseinheit'),
@@ -54,14 +54,12 @@ Hier sind deine Rahmenbedingungen:
 export const generateUnterrichtsablauf = async (
   anfrage: UnterrichtsablaufAnfrage
 ) => {
-  console.log('Anfrage:', JSON.stringify(anfrage, null, 2))
-
   const response = await getGeminiClient().models.generateContent({
     model: 'gemini-2.5-flash',
     contents: generatePrompt(anfrage),
     config: {
       responseMimeType: 'application/json',
-      responseJsonSchema: unterrichtsablaufResult.toJSONSchema(),
+      responseJsonSchema: unterrichtsablauf.toJSONSchema(),
     },
   })
 
@@ -69,7 +67,5 @@ export const generateUnterrichtsablauf = async (
     throw new Error('Keine Antwort vom Modell erhalten')
   }
 
-  console.log('Rohantwort vom Modell:', JSON.stringify(response, null, 2))
-
-  return JSON.parse(response.text) as z.infer<typeof unterrichtsablaufResult>
+  return JSON.parse(response.text) as z.infer<typeof unterrichtsablauf>
 }

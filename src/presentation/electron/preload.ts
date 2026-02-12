@@ -1,16 +1,16 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import {
   UnterrichtsablaufAnfrage,
-  UnterrichtsablaufResult,
+  Unterrichtsablauf,
 } from '../../unterrichtsablauf'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   send: (channel: string, data: UnterrichtsablaufAnfrage) => {
     ipcRenderer.send(channel, data)
   },
-  on: (channel: string, func: (result: UnterrichtsablaufResult) => void) => {
+  on: (channel: string, func: (result: Unterrichtsablauf) => void) => {
     ipcRenderer.on(channel, (event, ...args) =>
-      func(args[0] as UnterrichtsablaufResult)
+      func(args[0] as Unterrichtsablauf)
     )
   },
 })

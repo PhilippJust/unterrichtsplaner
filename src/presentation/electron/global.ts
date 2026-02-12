@@ -1,11 +1,11 @@
 import type {
   UnterrichtsablaufAnfrage,
-  UnterrichtsablaufResult,
+  Unterrichtsablauf,
 } from '../../unterrichtsablauf'
 
 export interface IElectronAPI {
   send: (channel: string, data: UnterrichtsablaufAnfrage) => void
-  on: (channel: string, func: (result: UnterrichtsablaufResult) => void) => void
+  on: (channel: string, func: (result: Unterrichtsablauf) => void) => void
 }
 
 declare global {

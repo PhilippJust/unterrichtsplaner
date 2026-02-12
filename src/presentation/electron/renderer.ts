@@ -1,5 +1,5 @@
 import type {
-  UnterrichtsablaufResult,
+  Unterrichtsablauf,
   UnterrichtsablaufAnfrage,
   Aktion,
 } from '../../unterrichtsablauf'
@@ -36,7 +36,7 @@ document
 
 window.electronAPI.on(
   'unterrichtsablauf-generated',
-  (result: UnterrichtsablaufResult) => {
+  (result: Unterrichtsablauf) => {
     ;(document.getElementById('thema') as HTMLElement).innerText = result.thema
 
     const lernzieleList = document.getElementById(
