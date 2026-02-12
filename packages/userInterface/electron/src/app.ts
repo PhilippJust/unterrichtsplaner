@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
-import { generateUnterrichtsablauf } from '../../unterrichtsablauf'
+import { generateUnterrichtsablauf } from '@unterrichtsplaner/core'
 import dotenv from 'dotenv'
 
 dotenv.config()

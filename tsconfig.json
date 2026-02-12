@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "declaration": true,
-    "sourceMap": true,
+    "target": "ES2022",
+    "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true,
-    "isolatedModules": true,
-    "outDir": "dist",
-    "rootDir": "src"
+    "outDir": "./dist"
   },
-  "include": ["src/**/*.ts", "src/**/*.json", "src/**/*.html"],
-  "exclude": ["node_modules"]
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/userInterface/cli" },
+    { "path": "./packages/userInterface/electron" }
+  ],
+  "files": []
 }

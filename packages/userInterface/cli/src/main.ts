@@ -1,4 +1,4 @@
-import { generateUnterrichtsablauf } from '../../unterrichtsablauf'
+import { generateUnterrichtsablauf } from '../../../core/src/unterrichtsablauf'
 
 const main = async () => {
   const unterrichtsablauf = await generateUnterrichtsablauf({

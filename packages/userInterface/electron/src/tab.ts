@@ -1,4 +1,4 @@
-type Tab = 'ziel' | 'ablaufplan'
+export type Tab = 'ziel' | 'ablaufplan'
 
 export function selectTab(id: Tab) {
   const tabContents = document.getElementsByClassName('tab-content')

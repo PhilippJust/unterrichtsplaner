@@ -1,0 +1,17 @@
+{
+  "name": "@unterrichtsplaner/electron",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "cp src/index.html dist/index.html && npm run build && ELECTRON_ENABLE_LOGGING=1 electron dist/app.js --ozone-platform=x11",
+    "test": "echo No tests yet"
+  },
+  "dependencies": {
+    "@unterrichtsplaner/core": "1.0.0"
+  },
+  "devDependencies": {
+    "electron": "^40.2.1",
+    "typescript": "^5.9.3"
+  }
+}
