@@ -4,8 +4,7 @@
     <title>Unterrichtsplaner</title>
     <meta charset="UTF-8">
     <style>
-        body { font-family: sans-serif; }
-        .container { padding: 20px; }
+        body { font-family: sans-serif; padding: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; }
         input, select { width: 100%; padding: 8px; box-sizing: border-box; }
@@ -13,11 +12,38 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+        .tab-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: calc(100%-10px);
+            span {
+                padding: 10px;                
+            }
+            .tab-unavailable {
+                background-color: #fdd;
+                cursor: not-allowed;
+            }
+            .tab-available {
+                background-color: #ddd;
+                cursor: pointer;
+            }
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
         <h1>Unterrichtsplaner</h1>
+        <nav>
+            <div class="tab-bar">
+                <span id="ziel-selector" class="tab tab-available" onclick="selectTab('ziel')">Ziel der Stunde</span>
+                <span id="ablaufplan-selector" class="tab tab-unavailable" >Ablaufplan</span>
+                <span id="material-selector" class="tab tab-unavailable" >Material</span>
+            </div>
+        </nav>
+        <div id="ziel" class="tab-content">
         <form id="planer-form">
             <div class="form-group">
                 <label for="fach">Fach</label>
@@ -49,8 +75,9 @@
             </div>
             <button type="submit">Plan erstellen</button>
         </form>
+        </div>
 
-        <div id="results">
+        <div id="ablaufplan" class="tab-content hidden">
             <h2 id="thema"></h2>
             <h3>Lernziele</h3>
             <ul id="lernziele"></ul>
@@ -94,9 +121,9 @@
                 <tbody></tbody>
             </table>
         </div>
-    </div>
     <!-- Dirty Hack: Siehe https://stackoverflow.com/a/46887516 -->
     <script>var exports = {};</script>
     <script src="renderer.js"></script>
+    <script src="tab.js"></script>
 </body>
 </html>

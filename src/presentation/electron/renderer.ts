@@ -3,8 +3,7 @@ import type {
   UnterrichtsablaufAnfrage,
   Aktion,
 } from '../../unterrichtsablauf'
-
-console.log('Renderer geladen')
+import { enableTab, selectTab } from './tab'
 
 document
   .getElementById('planer-form')
@@ -52,6 +51,9 @@ window.electronAPI.on(
     populateTable('einstiegsphase', result.einstiegsphase)
     populateTable('erarbeitungsphase', result.erarbeitungsphase)
     populateTable('sicherungsphase', result.sicherungsphase)
+
+    enableTab('ablaufplan')
+    selectTab('ablaufplan')
   }
 )
 
