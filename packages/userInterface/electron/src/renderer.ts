@@ -51,7 +51,8 @@ window.electronAPI.on(
     populateTable('erarbeitungsphase', result.erarbeitungsphase)
     populateTable('sicherungsphase', result.sicherungsphase)
 
-    window.electronAPI.enableAndSwitchTab('ablaufplan')
+    document.enableTab('ablaufplan')
+    document.switchTab('ablaufplan')
   }
 )
 

@@ -1,6 +1,6 @@
-export type Tab = 'ziel' | 'ablaufplan'
+type Tab = 'ziel' | 'ablaufplan'
 
-export function selectTab(id: Tab) {
+function switchTab(id: Tab) {
   const tabContents = document.getElementsByClassName('tab-content')
   for (let i = 0; i < tabContents.length; i++) {
     tabContents.item(i)?.setAttribute('class', 'tab-content hidden')
@@ -10,7 +10,7 @@ export function selectTab(id: Tab) {
   selectedTab?.setAttribute('class', 'tab-content')
 }
 
-export function enableTab(id: Tab) {
+function enableTab(id: Tab) {
   const element = document.getElementById(`${id}-selector`)
   if (!element) {
     throw `Konnte ${id}-selector nicht finden`
@@ -19,3 +19,6 @@ export function enableTab(id: Tab) {
   element.setAttribute('class', 'tab tab-available')
   element.setAttribute('onClick', `selectTab('${id}')`)
 }
+
+document.switchTab = switchTab
+document.enableTab = enableTab
