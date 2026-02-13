@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenAI, type Chat } from '@google/genai'
 import type { z, ZodObject } from 'zod'
 import type { IGenAiClient } from './IGenAiClient'
 
@@ -19,26 +19,21 @@ function getGeminiClient() {
 
 export class GeminiClient implements IGenAiClient {
   private client: GoogleGenAI
-
-  private conversationHistory = new Array<{
-    role: 'user' | 'assistant'
-    content: string
-  }>()
+  private chat: Chat
 
   constructor() {
     this.client = getGeminiClient()
+    this.chat = this.client.chats.create({
+      model: 'gemini-2.5-flash',
+    })
   }
 
   public generateTextWithSchema = async <T extends ZodObject>(
     prompt: string,
     schema: T
   ) => {
-    this.conversationHistory.push({ role: 'user', content: prompt })
-    const response = await this.client.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: this.conversationHistory
-        .map((m) => `${m.role}: ${m.content}`)
-        .join('\n'),
+    const response = await this.chat.sendMessage({
+      message: prompt,
       config: {
         responseMimeType: 'application/json',
         responseJsonSchema: schema.toJSONSchema(),
@@ -48,8 +43,6 @@ export class GeminiClient implements IGenAiClient {
     if (!response.text) {
       throw new Error('Keine Antwort vom Modell erhalten')
     }
-
-    this.conversationHistory.push({ role: 'assistant', content: response.text })
 
     const result = JSON.parse(response.text) as z.infer<T>
     return result

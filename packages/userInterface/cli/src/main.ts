@@ -22,14 +22,14 @@ const waitForUserInput = async (question: string): Promise<string> => {
 const main = async () => {
   const generator = new UnterrichtsablaufGenerator(new GeminiClient())
   const unterrichtsablauf = await generator.generateUnterrichtsablauf({
-    dauer: 90,
-    fach: 'Mathematik',
-    klassengroesse: 1,
+    dauer: 45,
+    fach: 'Geografie',
+    klassengroesse: 25,
     klassenstufe: 8,
     schulform: 'Oberschule',
-    themengebiet: 'Trigonometrie',
+    themengebiet: 'Globalisierung',
     zielsetzung:
-      'Die Schüler sollen die Grundlagen der Trigonometrie verstehen und anwenden können.',
+      'Die Schüler sollen verstehen, was Globalisierung bedeutet, welche Auswirkungen sie hat und wie sie sich auf verschiedene Lebensbereiche auswirkt.',
   })
   console.log(JSON.stringify(unterrichtsablauf, null, 2))
   const anmerkungen = await waitForUserInput(
