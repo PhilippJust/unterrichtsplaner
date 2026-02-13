@@ -32,6 +32,16 @@ document
     window.electronAPI.send('generate-unterrichtsablauf', anfrage)
   })
 
+document
+  .getElementById('plan-anmerkung-form')
+  ?.addEventListener('submit', (evt: Event) => {
+    const anmerkung = document.getElementById(
+      'plan-anmerkungen'
+    ) as HTMLTextAreaElement
+    evt.preventDefault()
+    window.electronAPI.send('iteriere-unterrichtsablauf', anmerkung.value)
+  })
+
 window.electronAPI.on(
   'unterrichtsablauf-generated',
   (result: Unterrichtsablauf) => {

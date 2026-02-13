@@ -1,5 +1,5 @@
 import z from 'zod'
-import { getGeminiClient } from './geminiClient'
+import type { IGenAiClient } from './genAi/IGenAiClient'
 
 const aktion = z.object({
   dauer: z.int().describe('Dauer der Aktion in Minuten'),
@@ -51,21 +51,35 @@ Hier sind deine Rahmenbedingungen:
 - Schulform: ${anfrage.schulform}
 `
 
-export const generateUnterrichtsablauf = async (
-  anfrage: UnterrichtsablaufAnfrage
-) => {
-  const response = await getGeminiClient().models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: generatePrompt(anfrage),
-    config: {
-      responseMimeType: 'application/json',
-      responseJsonSchema: unterrichtsablauf.toJSONSchema(),
-    },
-  })
+export class UnterrichtsablaufGenerator {
+  public readonly versionen = new Array<Unterrichtsablauf>()
 
-  if (!response.text) {
-    throw new Error('Keine Antwort vom Modell erhalten')
+  constructor(readonly genAiClient: IGenAiClient) {}
+
+  public generateUnterrichtsablauf = async (
+    anfrage: UnterrichtsablaufAnfrage
+  ) => {
+    const prompt = generatePrompt(anfrage)
+    const result = await this.genAiClient.generateTextWithSchema(
+      prompt,
+      unterrichtsablauf
+    )
+    this.versionen.push(result)
+    return result
   }
 
-  return JSON.parse(response.text) as z.infer<typeof unterrichtsablauf>
+  public iteriereUnterrichtsablauf = async (anmerkung: string) => {
+    if (this.versionen.length === 0) {
+      throw new Error(
+        'Es muss mindestens eine Version des Unterrichtsablaufs existieren, um eine Iteration zu erstellen.'
+      )
+    }
+
+    const result = await this.genAiClient.generateTextWithSchema(
+      anmerkung,
+      unterrichtsablauf
+    )
+    this.versionen.push(result)
+    return result
+  }
 }

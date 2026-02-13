@@ -1,11 +1,18 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
-import { generateUnterrichtsablauf } from '@unterrichtsplaner/core'
 import dotenv from 'dotenv'
+import {
+  GeminiClient,
+  UnterrichtsablaufGenerator,
+  type UnterrichtsablaufAnfrage,
+} from '@unterrichtsplaner/core'
 
 dotenv.config()
 
 let mainWindow: BrowserWindow | null = null
+
+const genAiClient = new GeminiClient()
+const unterrichtsablaufGenerator = new UnterrichtsablaufGenerator(genAiClient)
 
 app.on('ready', () => {
   mainWindow = new BrowserWindow({
@@ -25,9 +32,27 @@ app.on('ready', () => {
   })
 })
 
-ipcMain.on('generate-unterrichtsablauf', async (event, anfrage) => {
+ipcMain.on(
+  'generate-unterrichtsablauf',
+  async (event, anfrage: UnterrichtsablaufAnfrage) => {
+    try {
+      const result =
+        await unterrichtsablaufGenerator.generateUnterrichtsablauf(anfrage)
+      event.sender.send('unterrichtsablauf-generated', result)
+    } catch (error) {
+      // Handle error appropriately
+      console.error(error)
+      event.sender.send('generation-error', {
+        message: (error as Error).message,
+      })
+    }
+  }
+)
+
+ipcMain.on('iteriere-unterrichtsablauf', async (event, anmerkung: string) => {
   try {
-    const result = await generateUnterrichtsablauf(anfrage)
+    const result =
+      await unterrichtsablaufGenerator.iteriereUnterrichtsablauf(anmerkung)
     event.sender.send('unterrichtsablauf-generated', result)
   } catch (error) {
     // Handle error appropriately

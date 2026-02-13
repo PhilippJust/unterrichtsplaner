@@ -1,11 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import {
-  UnterrichtsablaufAnfrage,
-  Unterrichtsablauf,
-} from '@unterrichtsplaner/core'
+import { Unterrichtsablauf } from '@unterrichtsplaner/core'
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  send: (channel: string, data: UnterrichtsablaufAnfrage) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  send: (channel: string, data: any) => {
     ipcRenderer.send(channel, data)
   },
   on: (channel: string, func: (result: Unterrichtsablauf) => void) => {

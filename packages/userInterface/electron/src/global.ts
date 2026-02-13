@@ -1,10 +1,8 @@
-import type {
-  UnterrichtsablaufAnfrage,
-  Unterrichtsablauf,
-} from '@unterrichtsplaner/core'
+import type { Unterrichtsablauf } from '@unterrichtsplaner/core'
 
 export interface IElectronAPI {
-  send: (channel: string, data: UnterrichtsablaufAnfrage) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  send: (channel: string, data: any) => void
   on: (channel: string, func: (result: Unterrichtsablauf) => void) => void
 }
 
