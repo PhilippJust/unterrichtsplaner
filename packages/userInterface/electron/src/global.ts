@@ -13,6 +13,8 @@ declare global {
 
   interface Document {
     enableTab: (id: 'ziel' | 'ablaufplan') => void
-    switchTab: (id: 'ziel' | 'ablaufplan') => void
+    switchToTab: (id: 'ziel' | 'ablaufplan') => void
+    enableLoading: () => void
+    disableLoading: () => void
   }
 }

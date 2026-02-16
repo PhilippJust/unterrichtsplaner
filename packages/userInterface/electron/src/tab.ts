@@ -1,6 +1,6 @@
 type Tab = 'ziel' | 'ablaufplan'
 
-function switchTab(id: Tab) {
+function switchToTab(id: Tab) {
   const tabContents = document.getElementsByClassName('tab-content')
   for (let i = 0; i < tabContents.length; i++) {
     tabContents.item(i)?.setAttribute('class', 'tab-content hidden')
@@ -17,8 +17,8 @@ function enableTab(id: Tab) {
   }
 
   element.setAttribute('class', 'tab tab-available')
-  element.setAttribute('onClick', `selectTab('${id}')`)
+  element.setAttribute('onClick', `switchToTab('${id}')`)
 }
 
-document.switchTab = switchTab
+document.switchToTab = switchToTab
 document.enableTab = enableTab

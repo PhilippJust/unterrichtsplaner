@@ -1,49 +1,128 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Unterrichtsplaner</title>
     <meta charset="UTF-8">
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { padding: 10px 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
         .tab-bar {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             width: calc(100%-10px);
+
             span {
-                padding: 10px;                
+                padding: 10px;
             }
+
             .tab-unavailable {
                 background-color: #fdd;
                 cursor: not-allowed;
             }
+
             .tab-available {
                 background-color: #ddd;
                 cursor: pointer;
             }
         }
+
         .hidden {
             display: none;
         }
+
+        .flex {
+            display: flex;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);            
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: wait;            
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #0d9e8b;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
-        <h1>Unterrichtsplaner</h1>
-        <nav>
-            <div class="tab-bar">
-                <span id="ziel-selector" class="tab tab-available" onclick="selectTab('ziel')">Ziel der Stunde</span>
-                <span id="ablaufplan-selector" class="tab tab-unavailable" >Ablaufplan</span>
-                <span id="material-selector" class="tab tab-unavailable" >Material</span>
-            </div>
-        </nav>
-        <div id="ziel" class="tab-content">
+    <div id="loading-overlay" class="hidden"><span class="loading-spinner"></span></div>
+    <h1>Unterrichtsplaner</h1>
+    <nav>
+        <div class="tab-bar">
+            <span id="ziel-selector" class="tab tab-available" onclick="switchToTab('ziel')">Ziel der Stunde</span>
+            <span id="ablaufplan-selector" class="tab tab-unavailable">Ablaufplan</span>
+            <span id="material-selector" class="tab tab-unavailable">Material</span>
+        </div>
+    </nav>
+    <div id="ziel" class="tab-content">
         <form id="planer-form">
             <div class="form-group">
                 <label for="fach">Fach</label>
@@ -75,62 +154,65 @@
             </div>
             <button type="submit">Plan erstellen</button>
         </form>
+    </div>
+
+    <div id="ablaufplan" class="tab-content hidden">
+        <h2 id="thema"></h2>
+        <h3>Lernziele</h3>
+        <ul id="lernziele"></ul>
+
+        <h3>Einstiegsphase</h3>
+        <table id="einstiegsphase">
+            <thead>
+                <tr>
+                    <th>Dauer</th>
+                    <th>Ziel</th>
+                    <th>Beschreibung</th>
+                    <th>Material</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>Erarbeitungsphase</h3>
+        <table id="erarbeitungsphase">
+            <thead>
+                <tr>
+                    <th>Dauer</th>
+                    <th>Ziel</th>
+                    <th>Beschreibung</th>
+                    <th>Material</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>Sicherungsphase</h3>
+        <table id="sicherungsphase">
+            <thead>
+                <tr>
+                    <th>Dauer</th>
+                    <th>Ziel</th>
+                    <th>Beschreibung</th>
+                    <th>Material</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div>
+            <form id="plan-anmerkung-form">
+                <textarea id="plan-anmerkungen" name="anmerkungen" rows="4" cols="50"
+                    placeholder="Gib hier deine Anmerkungen zum Ablaufplan ein..."></textarea>
+                <button type="submit">Plan überarbeiten</button>
+            </form>
+
         </div>
-
-        <div id="ablaufplan" class="tab-content hidden">
-            <h2 id="thema"></h2>
-            <h3>Lernziele</h3>
-            <ul id="lernziele"></ul>
-
-            <h3>Einstiegsphase</h3>
-            <table id="einstiegsphase">
-                <thead>
-                    <tr>
-                        <th>Dauer</th>
-                        <th>Ziel</th>
-                        <th>Beschreibung</th>
-                        <th>Material</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <h3>Erarbeitungsphase</h3>
-            <table id="erarbeitungsphase">
-                <thead>
-                    <tr>
-                        <th>Dauer</th>
-                        <th>Ziel</th>
-                        <th>Beschreibung</th>
-                        <th>Material</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <h3>Sicherungsphase</h3>
-            <table id="sicherungsphase">
-                <thead>
-                    <tr>
-                        <th>Dauer</th>
-                        <th>Ziel</th>
-                        <th>Beschreibung</th>
-                        <th>Material</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div>
-                <form id="plan-anmerkung-form">
-                    <textarea id="plan-anmerkungen" name="anmerkungen" rows="4" cols="50" placeholder="Gib hier deine Anmerkungen zum Ablaufplan ein..."></textarea>
-                    <button type="submit">Plan überarbeiten</button>
-                </form>
-
-            </div>
-        </div>
+    </div>
     <!-- Dirty Hack: Siehe https://stackoverflow.com/a/46887516 -->
     <script>var exports = {};</script>
     <script src="renderer.js"></script>
     <script src="tab.js"></script>
+    <script src="loading.js"></script>
 </body>
+
 </html>

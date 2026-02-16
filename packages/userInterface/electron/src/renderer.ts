@@ -8,6 +8,7 @@ document
   .getElementById('planer-form')
   ?.addEventListener('submit', (evt: Event) => {
     evt.preventDefault()
+    enableLoading()
 
     const anfrage: UnterrichtsablaufAnfrage = {
       fach: (document.getElementById('fach') as HTMLInputElement).value,
@@ -39,6 +40,7 @@ document
       'plan-anmerkungen'
     ) as HTMLTextAreaElement
     evt.preventDefault()
+    enableLoading()
     window.electronAPI.send('iteriere-unterrichtsablauf', anmerkung.value)
   })
 
@@ -61,8 +63,9 @@ window.electronAPI.on(
     populateTable('erarbeitungsphase', result.erarbeitungsphase)
     populateTable('sicherungsphase', result.sicherungsphase)
 
-    document.enableTab('ablaufplan')
-    document.switchTab('ablaufplan')
+    enableTab('ablaufplan')
+    switchToTab('ablaufplan')
+    disableLoading()
   }
 )
 
