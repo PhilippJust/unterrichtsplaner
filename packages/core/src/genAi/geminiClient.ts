@@ -1,4 +1,4 @@
-import { GoogleGenAI, type Chat } from '@google/genai'
+import { GoogleGenAI, PersonGeneration, type Chat } from '@google/genai'
 import type { z, ZodObject } from 'zod'
 import type { IGenAiClient } from './IGenAiClient'
 
@@ -46,5 +46,24 @@ export class GeminiClient implements IGenAiClient {
 
     const result = JSON.parse(response.text) as z.infer<T>
     return result
+  }
+
+  /**
+   * Geht nicht im Free-Tier 
+   
+   */
+  public createImage = async (prompt: string) => {
+    const response = await this.client.models.generateImages({
+      model: 'imagen-4.0-generate-001',
+      prompt,
+      config: {
+        numberOfImages: 1,
+        personGeneration: PersonGeneration.ALLOW_ADULT,
+      },
+    })
+    if (!response.generatedImages?.length) {
+      throw new Error('Keine Bilder generiert')
+    }
+    return response.generatedImages[0]
   }
 }
