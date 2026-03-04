@@ -1,8 +1,10 @@
-import type {
-  Unterrichtsablauf,
-  UnterrichtsablaufAnfrage,
-  Aktion,
+import {
+  type Unterrichtsablauf,
+  type UnterrichtsablaufAnfrage,
+  type Aktion,
 } from '@unterrichtsplaner/core'
+
+let unterrichtsablauf: Unterrichtsablauf | undefined
 
 document
   .getElementById('planer-form')
@@ -33,6 +35,13 @@ document
     window.electronAPI.send('generate-unterrichtsablauf', anfrage)
   })
 
+document.getElementById('download-button')?.addEventListener('click', () => {
+  if (!unterrichtsablauf) {
+    return
+  }
+  window.electronAPI.send('save-unterrichtsablauf', unterrichtsablauf)
+})
+
 document
   .getElementById('plan-anmerkung-form')
   ?.addEventListener('submit', (evt: Event) => {
@@ -47,6 +56,7 @@ document
 window.electronAPI.on(
   'unterrichtsablauf-generated',
   (result: Unterrichtsablauf) => {
+    unterrichtsablauf = result
     ;(document.getElementById('thema') as HTMLElement).innerText = result.thema
 
     const lernzieleList = document.getElementById(

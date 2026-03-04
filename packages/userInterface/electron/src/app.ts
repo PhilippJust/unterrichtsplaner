@@ -1,11 +1,14 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
 import dotenv from 'dotenv'
 import {
   GeminiClient,
   UnterrichtsablaufGenerator,
+  unterrichtsAblaufToRtf,
+  type Unterrichtsablauf,
   type UnterrichtsablaufAnfrage,
 } from '@unterrichtsplaner/core'
+import fs from 'fs'
 
 dotenv.config()
 
@@ -49,6 +52,28 @@ ipcMain.on(
     }
   }
 )
+
+ipcMain.on('save-unterrichtsablauf', (event, content: Unterrichtsablauf) => {
+  if (!mainWindow) {
+    return
+  }
+  dialog
+    .showSaveDialog(mainWindow, {
+      title: 'Ablaufplan speichern',
+      defaultPath: 'unterrichtsablauf.rtf',
+      filters: [
+        {
+          name: 'Rich Text Format',
+          extensions: ['rtf'],
+        },
+      ],
+    })
+    .then((result) => {
+      if (!result.canceled && result.filePath) {
+        fs.writeFileSync(result.filePath, unterrichtsAblaufToRtf(content))
+      }
+    })
+})
 
 ipcMain.on('iteriere-unterrichtsablauf', async (event, anmerkung: string) => {
   try {
