@@ -4,11 +4,11 @@ import dotenv from 'dotenv'
 import {
   GeminiClient,
   UnterrichtsablaufGenerator,
-  unterrichtsAblaufToRtf,
+  unterrichtsAblaufToDocx,
   type Unterrichtsablauf,
   type UnterrichtsablaufAnfrage,
 } from '@unterrichtsplaner/core'
-import fs from 'fs'
+import { writeFile } from 'fs/promises'
 
 dotenv.config()
 
@@ -60,17 +60,19 @@ ipcMain.on('save-unterrichtsablauf', (event, content: Unterrichtsablauf) => {
   dialog
     .showSaveDialog(mainWindow, {
       title: 'Ablaufplan speichern',
-      defaultPath: 'unterrichtsablauf.rtf',
+      defaultPath: 'unterrichtsablauf.docx',
       filters: [
         {
-          name: 'Rich Text Format',
-          extensions: ['rtf'],
+          name: 'Word Document',
+          extensions: ['docx'],
         },
       ],
     })
     .then((result) => {
       if (!result.canceled && result.filePath) {
-        fs.writeFileSync(result.filePath, unterrichtsAblaufToRtf(content))
+        unterrichtsAblaufToDocx(content).then((docxBuffer) => {
+          writeFile(result.filePath, docxBuffer)
+        })
       }
     })
 })

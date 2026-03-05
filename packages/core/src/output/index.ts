@@ -1,1 +1,1 @@
-export * from './rtf'
+export * from './docx'
