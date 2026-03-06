@@ -21,7 +21,7 @@ const waitForUserInput = async (question: string): Promise<string> => {
 
 const main = async () => {
   const generator = new UnterrichtsablaufGenerator(new GeminiClient())
-  const unterrichtsablauf = await generator.generateUnterrichtsablauf({
+  const unterrichtsablauf = await generator.generiere({
     dauer: 45,
     fach: 'Geografie',
     klassengroesse: 25,
@@ -35,7 +35,7 @@ const main = async () => {
   const anmerkungen = await waitForUserInput(
     'Bitte gib deine Anmerkungen ein: '
   )
-  const neueVersion = await generator.iteriereUnterrichtsablauf(anmerkungen)
+  const neueVersion = await generator.iteriere(anmerkungen)
   console.log(JSON.stringify(neueVersion, null, 2))
 }
 

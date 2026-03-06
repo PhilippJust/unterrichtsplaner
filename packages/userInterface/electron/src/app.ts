@@ -40,8 +40,7 @@ ipcMain.on(
   'generate-unterrichtsablauf',
   async (event, anfrage: UnterrichtsablaufAnfrage) => {
     try {
-      const result =
-        await unterrichtsablaufGenerator.generateUnterrichtsablauf(anfrage)
+      const result = await unterrichtsablaufGenerator.generiere(anfrage)
       event.sender.send('unterrichtsablauf-generated', result)
     } catch (error) {
       // Handle error appropriately
@@ -79,8 +78,7 @@ ipcMain.on('save-unterrichtsablauf', (event, content: Unterrichtsablauf) => {
 
 ipcMain.on('iteriere-unterrichtsablauf', async (event, anmerkung: string) => {
   try {
-    const result =
-      await unterrichtsablaufGenerator.iteriereUnterrichtsablauf(anmerkung)
+    const result = await unterrichtsablaufGenerator.iteriere(anmerkung)
     event.sender.send('unterrichtsablauf-generated', result)
   } catch (error) {
     // Handle error appropriately

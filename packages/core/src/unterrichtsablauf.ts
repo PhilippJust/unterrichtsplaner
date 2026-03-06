@@ -1,5 +1,6 @@
 import z from 'zod'
 import type { IGenAiClient } from './genAi/IGenAiClient'
+import { Generator } from './generator'
 
 const aktion = z.object({
   dauer: z.int().describe('Dauer der Aktion in Minuten'),
@@ -34,8 +35,16 @@ const _anfrageSchema = z.object({
 
 export type UnterrichtsablaufAnfrage = z.infer<typeof _anfrageSchema>
 
-const generatePrompt = (anfrage: UnterrichtsablaufAnfrage) =>
-  `# Unterrichtsvorbereitung
+export class UnterrichtsablaufGenerator extends Generator<
+  UnterrichtsablaufAnfrage,
+  Unterrichtsablauf
+> {
+  constructor(genAiClient: IGenAiClient) {
+    super(genAiClient, unterrichtsablauf)
+  }
+
+  protected generatePrompt = (anfrage: UnterrichtsablaufAnfrage) =>
+    `# Unterrichtsvorbereitung
 
 Du bist eine Lehrkraft an einer deutschen Schule und musst eine Unterrichtseinheit vorbereiten.
 Erstelle zunächst einen Ablaufplan inklusive Zeitplan mit den Phasen Einstieg, Erarbeitung und Sicherung.
@@ -50,36 +59,4 @@ Hier sind deine Rahmenbedingungen:
 - Klassenstufe: ${anfrage.klassenstufe}
 - Schulform: ${anfrage.schulform}
 `
-
-export class UnterrichtsablaufGenerator {
-  public readonly versionen = new Array<Unterrichtsablauf>()
-
-  constructor(readonly genAiClient: IGenAiClient) {}
-
-  public generateUnterrichtsablauf = async (
-    anfrage: UnterrichtsablaufAnfrage
-  ) => {
-    const prompt = generatePrompt(anfrage)
-    const result = await this.genAiClient.generateTextWithSchema(
-      prompt,
-      unterrichtsablauf
-    )
-    this.versionen.push(result)
-    return result
-  }
-
-  public iteriereUnterrichtsablauf = async (anmerkung: string) => {
-    if (this.versionen.length === 0) {
-      throw new Error(
-        'Es muss mindestens eine Version des Unterrichtsablaufs existieren, um eine Iteration zu erstellen.'
-      )
-    }
-
-    const result = await this.genAiClient.generateTextWithSchema(
-      anmerkung,
-      unterrichtsablauf
-    )
-    this.versionen.push(result)
-    return result
-  }
 }
