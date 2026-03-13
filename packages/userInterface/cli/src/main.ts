@@ -1,42 +1,30 @@
 import {
+  ArbeitsblattGenerator,
   GeminiClient,
   UnterrichtsablaufGenerator,
 } from '@unterrichtsplaner/core'
-import readline from 'readline/promises'
-import { stdin, stdout } from 'process'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const waitForUserInput = async (question: string): Promise<string> => {
-  console.log(question)
-  const rl = readline.createInterface({ input: stdin, output: stdout })
-  let answer = ''
-  while (!answer.trim()) {
-    answer = await rl.question(question)
-  }
-  rl.close()
-  return answer
-}
+const geminiClient = new GeminiClient()
 
 const main = async () => {
-  const generator = new UnterrichtsablaufGenerator(new GeminiClient())
+  const generator = new UnterrichtsablaufGenerator(geminiClient)
   const unterrichtsablauf = await generator.generiere({
     dauer: 45,
-    fach: 'Geografie',
+    fach: 'Mathematik',
     klassengroesse: 25,
-    klassenstufe: 8,
+    klassenstufe: 9,
     schulform: 'Oberschule',
-    themengebiet: 'Globalisierung',
+    themengebiet: 'Trigonometrie',
     zielsetzung:
-      'Die Schüler sollen verstehen, was Globalisierung bedeutet, welche Auswirkungen sie hat und wie sie sich auf verschiedene Lebensbereiche auswirkt.',
+      'Die Schüler sollen den Sinussatz kennenlernen und anwenden können',
   })
   console.log(JSON.stringify(unterrichtsablauf, null, 2))
-  const anmerkungen = await waitForUserInput(
-    'Bitte gib deine Anmerkungen ein: '
-  )
-  const neueVersion = await generator.iteriere(anmerkungen)
-  console.log(JSON.stringify(neueVersion, null, 2))
+  const arbeitsblattGenerator = new ArbeitsblattGenerator(geminiClient)
+  const arbeitsblatt = await arbeitsblattGenerator.generiere(undefined)
+  console.log(JSON.stringify(arbeitsblatt, null, 2))
 }
 
 main()
