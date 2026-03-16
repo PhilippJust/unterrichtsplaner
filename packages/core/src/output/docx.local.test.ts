@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { unterrichtsAblaufToDocx } from './docx'
+import { arbeitsblattToDocx, unterrichtsAblaufToDocx } from './docx'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 
@@ -44,5 +44,40 @@ describe('DOCX Generator', () => {
     expect(result.length).toBeGreaterThan(0)
 
     writeFileSync(join(__dirname, 'testoutput/unterrichtsablauf.docx'), result)
+  })
+
+  it('should generate DOCX from Arbeitsblatt', async () => {
+    const result = await arbeitsblattToDocx({
+      thema: 'Testthema Arbeitsblatt',
+      aufgaben: [
+        {
+          aufgabenstellung: 'Eine Testaufgabe',
+          dauer: 10,
+          musterloesung: 'Musterlösung zur Testaufgabe',
+          anzahlLoesungszeilen: 3,
+        },
+        {
+          aufgabenstellung: 'Vergleiche die Haikus',
+          dauer: 10,
+          musterloesung: 'Musterlösung zur Testaufgabe',
+          material: {
+            text: [
+              `Alte Teiche, ein Frosch springt hinein, Platsch!`,
+              `Sommerregen, auf dem Dach ein Tropfen, leise Musik.`,
+            ],
+          },
+          anzahlLoesungszeilen: 10,
+        },
+      ],
+    })
+
+    writeFileSync(
+      join(__dirname, 'testoutput/arbeitsblatt.docx'),
+      result.arbeitsblatt
+    )
+    writeFileSync(
+      join(__dirname, 'testoutput/arbeitsblatt_ musterloesung.docx'),
+      result.musterloesung
+    )
   })
 })

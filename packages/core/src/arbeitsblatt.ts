@@ -8,6 +8,11 @@ const arbeitsblatt = z.object({
       z.object({
         aufgabenstellung: z.string().describe('Die Aufgabe für die Schüler'),
         musterloesung: z.string().describe('Eine Musterlösung zu der Aufgabe'),
+        anzahlLoesungszeilen: z
+          .int()
+          .describe(
+            'Die Anzahl der Zeilen, die die Schüler für die Bearbeitung der Aufgabe benötigen. Sollte so gewählt werden, dass handschriftlich genügend Platz für die Bearbeitung der Aufgabe ist.'
+          ),
         dauer: z
           .int()
           .describe(

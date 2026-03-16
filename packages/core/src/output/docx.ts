@@ -10,6 +10,7 @@ import {
   BorderStyle,
 } from 'docx'
 import type { Unterrichtsablauf, Aktion } from '../unterrichtsablauf'
+import type { Arbeitsblatt } from '../arbeitsblatt'
 
 const createAktionTable = (aktionen: Aktion[]) => {
   const headerRow = new TableRow({
@@ -138,4 +139,104 @@ export const unterrichtsAblaufToDocx = async (
   })
 
   return await Packer.toBuffer(doc)
+}
+
+export const arbeitsblattToDocx = async (
+  arbeitsblatt: Arbeitsblatt & { thema: string }
+): Promise<{ musterloesung: Buffer; arbeitsblatt: Buffer }> => {
+  const arbeitsblattDoc = new Document({
+    styles: {
+      paragraphStyles: [
+        {
+          id: 'aufgabenLoeungszeilen',
+          name: 'aufgabenLoeungszeilen',
+          paragraph: {
+            spacing: {
+              line: 509, // 9 mm
+            },
+          },
+        },
+      ],
+    },
+    sections: [
+      {
+        properties: {},
+        children: [
+          new Paragraph({
+            text: `Arbeitsblatt: ${arbeitsblatt.thema}`,
+            heading: HeadingLevel.HEADING_1,
+          }),
+          ...arbeitsblatt.aufgaben.flatMap((aufgabe, index) => [
+            new Paragraph({
+              text: `Aufgabe ${index + 1}: ${aufgabe.aufgabenstellung}`,
+              heading: HeadingLevel.HEADING_2,
+            }),
+            ...(aufgabe.material?.text?.map(
+              (text) =>
+                new Paragraph({
+                  text: text,
+                  bullet: {
+                    level: 0,
+                  },
+                })
+            ) || []),
+
+            ...(aufgabe.anmerkungen
+              ? [
+                  new Paragraph({
+                    text: 'Anmerkungen:',
+                    heading: HeadingLevel.HEADING_3,
+                  }),
+                  new Paragraph({
+                    text: aufgabe.anmerkungen,
+                  }),
+                ]
+              : []),
+
+            new Paragraph({
+              text: '_'.repeat(90 * aufgabe.anzahlLoesungszeilen),
+              style: 'aufgabenLoeungszeilen',
+            }),
+          ]),
+        ],
+      },
+    ],
+  })
+
+  const musterloesungDoc = new Document({
+    sections: [
+      {
+        properties: {},
+        children: [
+          new Paragraph({
+            text: `Musterlösung: ${arbeitsblatt.thema}`,
+            heading: HeadingLevel.HEADING_1,
+          }),
+          ...arbeitsblatt.aufgaben.flatMap((aufgabe, index) => [
+            new Paragraph({
+              text: `Aufgabe ${index + 1}: ${aufgabe.aufgabenstellung} (${aufgabe.dauer} Min.)`,
+              heading: HeadingLevel.HEADING_2,
+            }),
+            ...(aufgabe.material?.text?.map(
+              (text) =>
+                new Paragraph({
+                  text: text,
+                  bullet: {
+                    level: 0,
+                  },
+                })
+            ) || []),
+            new Paragraph({
+              text: aufgabe.musterloesung,
+            }),
+          ]),
+        ],
+      },
+    ],
+  })
+
+  return {
+    arbeitsblatt: await Packer.toBuffer(arbeitsblattDoc),
+    musterloesung: await Packer.toBuffer(musterloesungDoc),
+  }
 }
