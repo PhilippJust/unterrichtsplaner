@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.38.0",
+    "@mohtasham/md-to-docx": "^2.9.0",
     "docx": "^9.6.0",
     "dotenv": "^17.2.3",
     "zod": "^4.3.6"

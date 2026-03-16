@@ -11,6 +11,7 @@ import {
 } from 'docx'
 import type { Unterrichtsablauf, Aktion } from '../unterrichtsablauf'
 import type { Arbeitsblatt } from '../arbeitsblatt'
+import { convertMarkdownToDocx } from '@mohtasham/md-to-docx'
 
 const createAktionTable = (aktionen: Aktion[]) => {
   const headerRow = new TableRow({
@@ -143,100 +144,35 @@ export const unterrichtsAblaufToDocx = async (
 
 export const arbeitsblattToDocx = async (
   arbeitsblatt: Arbeitsblatt & { thema: string }
-): Promise<{ musterloesung: Buffer; arbeitsblatt: Buffer }> => {
-  const arbeitsblattDoc = new Document({
-    styles: {
-      paragraphStyles: [
-        {
-          id: 'aufgabenLoeungszeilen',
-          name: 'aufgabenLoeungszeilen',
-          paragraph: {
-            spacing: {
-              line: 509, // 9 mm
-            },
-          },
-        },
-      ],
-    },
-    sections: [
-      {
-        properties: {},
-        children: [
-          new Paragraph({
-            text: `Arbeitsblatt: ${arbeitsblatt.thema}`,
-            heading: HeadingLevel.HEADING_1,
-          }),
-          ...arbeitsblatt.aufgaben.flatMap((aufgabe, index) => [
-            new Paragraph({
-              text: `Aufgabe ${index + 1}: ${aufgabe.aufgabenstellung}`,
-              heading: HeadingLevel.HEADING_2,
-            }),
-            ...(aufgabe.material?.text?.map(
-              (text) =>
-                new Paragraph({
-                  text: text,
-                  bullet: {
-                    level: 0,
-                  },
-                })
-            ) || []),
+): Promise<{ musterloesung: Blob; arbeitsblatt: Blob }> => {
+  const arbeitsblattMarkdown = `# ${arbeitsblatt.thema}
 
-            ...(aufgabe.anmerkungen
-              ? [
-                  new Paragraph({
-                    text: 'Anmerkungen:',
-                    heading: HeadingLevel.HEADING_3,
-                  }),
-                  new Paragraph({
-                    text: aufgabe.anmerkungen,
-                  }),
-                ]
-              : []),
+  ${arbeitsblatt.aufgaben
+    .map(
+      (aufgabe, index) =>
+        `## Aufgabe ${index + 1} ${aufgabe.aufgabenstellung}
+  ${aufgabe.material?.text ? `${aufgabe.material.text.join('\n\n')}` : ''}
+  
+  
+  \u00A0${'_'.repeat(aufgabe.anzahlLoesungszeilen * 81)}`
+    )
+    .join('\n\n')}
+  `
 
-            new Paragraph({
-              text: '_'.repeat(90 * aufgabe.anzahlLoesungszeilen),
-              style: 'aufgabenLoeungszeilen',
-            }),
-          ]),
-        ],
-      },
-    ],
-  })
+  const loesungsmarkdown = `# Musterlösung ${arbeitsblatt.thema}
 
-  const musterloesungDoc = new Document({
-    sections: [
-      {
-        properties: {},
-        children: [
-          new Paragraph({
-            text: `Musterlösung: ${arbeitsblatt.thema}`,
-            heading: HeadingLevel.HEADING_1,
-          }),
-          ...arbeitsblatt.aufgaben.flatMap((aufgabe, index) => [
-            new Paragraph({
-              text: `Aufgabe ${index + 1}: ${aufgabe.aufgabenstellung} (${aufgabe.dauer} Min.)`,
-              heading: HeadingLevel.HEADING_2,
-            }),
-            ...(aufgabe.material?.text?.map(
-              (text) =>
-                new Paragraph({
-                  text: text,
-                  bullet: {
-                    level: 0,
-                  },
-                })
-            ) || []),
-            new Paragraph({
-              text: aufgabe.musterloesung,
-            }),
-          ]),
-        ],
-      },
-    ],
-  })
+  ${arbeitsblatt.aufgaben
+    .map(
+      (aufgabe, index) =>
+        `## Aufgabe ${index + 1} ${aufgabe.aufgabenstellung}
+  ${aufgabe.material?.text ? `${aufgabe.material.text.join('\n\n')}` : ''}
+  \n\n---\n\n${aufgabe.musterloesung}`
+    )
+    .join('\n\n')}
+  `
 
   return {
-    arbeitsblatt: await Packer.toBuffer(arbeitsblattDoc),
-    musterloesung: await Packer.toBuffer(musterloesungDoc),
+    arbeitsblatt: await convertMarkdownToDocx(arbeitsblattMarkdown),
+    musterloesung: await convertMarkdownToDocx(loesungsmarkdown),
   }
 }

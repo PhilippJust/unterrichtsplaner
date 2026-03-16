@@ -6,8 +6,14 @@ const arbeitsblatt = z.object({
   aufgaben: z
     .array(
       z.object({
-        aufgabenstellung: z.string().describe('Die Aufgabe für die Schüler'),
-        musterloesung: z.string().describe('Eine Musterlösung zu der Aufgabe'),
+        aufgabenstellung: z
+          .string()
+          .describe('Die Aufgabe für die Schüler. Darf Markdown enthalten.'),
+        musterloesung: z
+          .string()
+          .describe(
+            'Eine Musterlösung zu der Aufgabe. Darf Markdown enthalten.'
+          ),
         anzahlLoesungszeilen: z
           .int()
           .describe(
@@ -24,7 +30,7 @@ const arbeitsblatt = z.object({
               .array(z.string())
               .optional()
               .describe(
-                'Textuelles Material, das die Schüler für die Bearbeitung der Aufgabe benötigen'
+                'Textuelles Material, das die Schüler für die Bearbeitung der Aufgabe benötigen. Darf Markdown enthalten.'
               ),
             skizzen: z
               .array(z.string())

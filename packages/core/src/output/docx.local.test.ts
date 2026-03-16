@@ -68,16 +68,48 @@ describe('DOCX Generator', () => {
           },
           anzahlLoesungszeilen: 10,
         },
+        {
+          aufgabenstellung: 'Welche Aufgaben hat das europäische Parlament?',
+          dauer: 25,
+          musterloesung: `* Stimmt über Gesetze und den Haushalt ab
+* Kontrolliert die EU-Kommission
+* Wählt die Präsidentin der EU-Kommission`,
+          material: {
+            text: [
+              `**Europäisches Parlament**
+
+Das Europäische Parlament ist die einzige direkt gewählte Institution der Europäischen Union.
+Es vertritt die Interessen der Bürgerinnen und Bürger der EU und hat seinen Hauptsitz in 
+Straßburg (Frankreich), wobei weitere Sitzungen und die Verwaltung auch in Brüssel (Belgien)
+und Luxemburg stattfinden. Die Abgeordneten des Europäischen Parlaments werden alle fünf Jahre 
+in direkten Wahlen von den EU-Bürgern gewählt.  
+Es hat drei Kernaufgaben: 
+1.  **Gesetzgebung:** 
+Es übt zusammen mit dem Rat der Europäischen Union die Gesetzgebungsfunktion aus,
+indem es die meisten EU-Gesetze verabschiedet, ändert oder ablehnt. Dies bedeutet,
+dass keine wichtigen EU-Gesetze ohne die Zustimmung des Parlaments in Kraft treten können.
+2.  **Kontrolle:** 
+Es kontrolliert andere EU-Institutionen, insbesondere die Europäische Kommission. 
+Dazu gehört die Genehmigung des EU-Haushaltsplans, die Überwachung, wie EU-Gelder ausgegeben werden,
+und die Entlastung der Kommission. Das Parlament kann auch Untersuchungsausschüsse einsetzen.
+3.  **Wahlrecht und demokratische Aufsicht:**
+Es wählt den Präsidenten der Europäischen Kommission und hat das Recht, die gesamte Kommission durch
+ein Misstrauensvotum abzulehnen. Dadurch stellt es sicher, dass die Kommission demokratisch legitimiert ist
+und zur Rechenschaft gezogen werden kann.`,
+            ],
+          },
+          anzahlLoesungszeilen: 10,
+        },
       ],
     })
 
     writeFileSync(
       join(__dirname, 'testoutput/arbeitsblatt.docx'),
-      result.arbeitsblatt
+      Buffer.from(await result.arbeitsblatt.arrayBuffer())
     )
     writeFileSync(
       join(__dirname, 'testoutput/arbeitsblatt_ musterloesung.docx'),
-      result.musterloesung
+      Buffer.from(await result.musterloesung.arrayBuffer())
     )
   })
 })
