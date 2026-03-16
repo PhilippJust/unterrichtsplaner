@@ -49,34 +49,37 @@ describe('DOCX Generator', () => {
   it('should generate DOCX from Arbeitsblatt', async () => {
     const result = await arbeitsblattToDocx({
       thema: 'Testthema Arbeitsblatt',
-      aufgaben: [
+      varianten: [
         {
-          aufgabenstellung: 'Eine Testaufgabe',
-          dauer: 10,
-          musterloesung: 'Musterlösung zur Testaufgabe',
-          anzahlLoesungszeilen: 3,
-        },
-        {
-          aufgabenstellung: 'Vergleiche die Haikus',
-          dauer: 10,
-          musterloesung: 'Musterlösung zur Testaufgabe',
-          material: {
-            text: [
-              `Alte Teiche, ein Frosch springt hinein, Platsch!`,
-              `Sommerregen, auf dem Dach ein Tropfen, leise Musik.`,
-            ],
-          },
-          anzahlLoesungszeilen: 10,
-        },
-        {
-          aufgabenstellung: 'Welche Aufgaben hat das europäische Parlament?',
-          dauer: 25,
-          musterloesung: `* Stimmt über Gesetze und den Haushalt ab
+          aufgaben: [
+            {
+              aufgabenstellung: 'Eine Testaufgabe',
+              dauer: 10,
+              musterloesung: 'Musterlösung zur Testaufgabe',
+              anzahlLoesungszeilen: 3,
+            },
+            {
+              aufgabenstellung: 'Vergleiche die Haikus',
+              dauer: 10,
+              musterloesung: 'Musterlösung zur Testaufgabe',
+              material: {
+                text: [
+                  `Alte Teiche, ein Frosch springt hinein, Platsch!`,
+                  `Sommerregen, auf dem Dach ein Tropfen, leise Musik.`,
+                ],
+              },
+              anzahlLoesungszeilen: 10,
+            },
+            {
+              aufgabenstellung:
+                'Welche Aufgaben hat das europäische Parlament?',
+              dauer: 25,
+              musterloesung: `* Stimmt über Gesetze und den Haushalt ab
 * Kontrolliert die EU-Kommission
 * Wählt die Präsidentin der EU-Kommission`,
-          material: {
-            text: [
-              `**Europäisches Parlament**
+              material: {
+                text: [
+                  `**Europäisches Parlament**
 
 Das Europäische Parlament ist die einzige direkt gewählte Institution der Europäischen Union.
 Es vertritt die Interessen der Bürgerinnen und Bürger der EU und hat seinen Hauptsitz in 
@@ -96,16 +99,18 @@ und die Entlastung der Kommission. Das Parlament kann auch Untersuchungsausschü
 Es wählt den Präsidenten der Europäischen Kommission und hat das Recht, die gesamte Kommission durch
 ein Misstrauensvotum abzulehnen. Dadurch stellt es sicher, dass die Kommission demokratisch legitimiert ist
 und zur Rechenschaft gezogen werden kann.`,
-            ],
-          },
-          anzahlLoesungszeilen: 10,
+                ],
+              },
+              anzahlLoesungszeilen: 10,
+            },
+          ],
         },
       ],
     })
 
     writeFileSync(
       join(__dirname, 'testoutput/arbeitsblatt.docx'),
-      Buffer.from(await result.arbeitsblatt.arrayBuffer())
+      Buffer.from(await result.arbeitsblaetter[0].arrayBuffer())
     )
     writeFileSync(
       join(__dirname, 'testoutput/arbeitsblatt_ musterloesung.docx'),

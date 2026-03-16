@@ -144,10 +144,11 @@ export const unterrichtsAblaufToDocx = async (
 
 export const arbeitsblattToDocx = async (
   arbeitsblatt: Arbeitsblatt & { thema: string }
-): Promise<{ musterloesung: Blob; arbeitsblatt: Blob }> => {
-  const arbeitsblattMarkdown = `# ${arbeitsblatt.thema}
+): Promise<{ musterloesung: Blob; arbeitsblaetter: Blob[] }> => {
+  const arbeitsblattMarkdowns = arbeitsblatt.varianten.map(
+    (v) => `# ${arbeitsblatt.thema}${v.variante ? ` - ${v.variante}` : ''}
 
-  ${arbeitsblatt.aufgaben
+  ${v.aufgaben
     .map(
       (aufgabe, index) =>
         `## Aufgabe ${index + 1} ${aufgabe.aufgabenstellung}
@@ -158,21 +159,29 @@ export const arbeitsblattToDocx = async (
     )
     .join('\n\n')}
   `
+  )
 
-  const loesungsmarkdown = `# Musterlösung ${arbeitsblatt.thema}
-
-  ${arbeitsblatt.aufgaben
-    .map(
-      (aufgabe, index) =>
-        `## Aufgabe ${index + 1} ${aufgabe.aufgabenstellung}
+  const loesungsmarkdown = `${arbeitsblatt.varianten
+    .map((v) =>
+      v.variante
+        ? `# Musterlösung ${arbeitsblatt.thema} - ${v.variante}`
+        : `# Musterlösung ${arbeitsblatt.thema}` +
+          v.aufgaben
+            .map(
+              (aufgabe, index) =>
+                `## Aufgabe ${index + 1} ${aufgabe.aufgabenstellung}
   ${aufgabe.material?.text ? `${aufgabe.material.text.join('\n\n')}` : ''}
   \n\n---\n\n${aufgabe.musterloesung}`
+            )
+            .join('\n\n')
     )
-    .join('\n\n')}
+    .join('\\pagebreak')}
   `
 
   return {
-    arbeitsblatt: await convertMarkdownToDocx(arbeitsblattMarkdown),
+    arbeitsblaetter: await Promise.all(
+      arbeitsblattMarkdowns.map((md) => convertMarkdownToDocx(md))
+    ),
     musterloesung: await convertMarkdownToDocx(loesungsmarkdown),
   }
 }
