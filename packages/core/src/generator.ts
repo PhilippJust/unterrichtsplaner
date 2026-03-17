@@ -11,16 +11,16 @@ export abstract class Generator<TAnfrage, TOutput> {
 
   protected abstract generatePrompt(anfrage: TAnfrage): string
 
-  public generiere = async (anfrage: TAnfrage) => {
+  public generiere = async (anfrage: TAnfrage): Promise<TOutput> => {
     const prompt = this.generatePrompt(anfrage)
     const result = await this.genAiClient.generateTextWithSchema<
       typeof this.schema
     >(prompt, this.schema)
     this.versionen.push(result as TOutput)
-    return result
+    return result as TOutput
   }
 
-  public iteriere = async (anmerkung: string) => {
+  public iteriere = async (anmerkung: string): Promise<TOutput> => {
     if (this.versionen.length === 0) {
       throw new Error(
         'Es muss mindestens eine Version des Outputs existieren, um eine Iteration zu erstellen.'
@@ -31,6 +31,6 @@ export abstract class Generator<TAnfrage, TOutput> {
       typeof this.schema
     >(anmerkung, this.schema)
     this.versionen.push(result as TOutput)
-    return result
+    return result as TOutput
   }
 }

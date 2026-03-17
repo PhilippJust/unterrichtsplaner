@@ -2,33 +2,30 @@ import { GoogleGenAI, PersonGeneration, type Chat } from '@google/genai'
 import type { z, ZodObject } from 'zod'
 import type { IGenAiClient } from './IGenAiClient'
 
-let _client: GoogleGenAI | null = null
-
-function getGeminiClient() {
-  if (!_client) {
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set in environment variables')
-    }
-    _client = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    })
-  }
-  return _client
-}
-
 export class GeminiClient implements IGenAiClient {
   private client: GoogleGenAI
   private chat: Chat
 
-  constructor() {
-    this.client = getGeminiClient()
+  constructor(options?: { apiKey?: string }) {
+    const apiKey =
+      options?.apiKey ||
+      (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined)
+
+    if (!apiKey) {
+      throw new Error(
+        'No API Key provided and GEMINI_API_KEY not set in environment'
+      )
+    }
+
+    this.client = new GoogleGenAI({ apiKey })
     this.chat = this.client.chats.create({
       model: 'gemini-2.5-flash',
     })
   }
 
-  public generateTextWithSchema = async <T extends ZodObject>(
+  public generateTextWithSchema = async <
+    T extends ZodObject<z.core.$ZodLooseShape, z.core.$strip>,
+  >(
     prompt: string,
     schema: T
   ) => {
@@ -49,8 +46,7 @@ export class GeminiClient implements IGenAiClient {
   }
 
   /**
-   * Geht nicht im Free-Tier 
-   
+   * Geht nicht im Free-Tier
    */
   public createImage = async (prompt: string) => {
     const response = await this.client.models.generateImages({

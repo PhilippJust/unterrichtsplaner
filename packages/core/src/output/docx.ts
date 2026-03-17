@@ -81,7 +81,7 @@ const createAktionTable = (aktionen: Aktion[]) => {
 
 export const unterrichtsAblaufToDocx = async (
   ablauf: Unterrichtsablauf
-): Promise<Buffer> => {
+): Promise<Blob> => {
   const doc = new Document({
     styles: {
       paragraphStyles: [
@@ -139,7 +139,7 @@ export const unterrichtsAblaufToDocx = async (
     ],
   })
 
-  return await Packer.toBuffer(doc)
+  return await Packer.toBlob(doc)
 }
 
 export const arbeitsblattToDocx = async (

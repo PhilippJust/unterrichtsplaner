@@ -7,7 +7,8 @@
   "workspaces": [
     "packages/core",
     "packages/userInterface/cli",
-    "packages/userInterface/electron"
+    "packages/userInterface/electron",
+    "packages/userInterface/next-js"
   ],
   "scripts": {
     "test": "npm run test --workspaces",

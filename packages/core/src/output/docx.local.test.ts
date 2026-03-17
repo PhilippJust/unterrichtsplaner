@@ -40,10 +40,15 @@ describe('DOCX Generator', () => {
       ],
     })
 
-    expect(result).toBeInstanceOf(Buffer)
-    expect(result.length).toBeGreaterThan(0)
+    // Expect Blob (in browser-like or node env)
+    expect(result).toBeDefined()
+    // Check if it has arrayBuffer method (Blob interface)
+    expect(typeof result.arrayBuffer).toBe('function')
 
-    writeFileSync(join(__dirname, 'testoutput/unterrichtsablauf.docx'), result)
+    const buffer = Buffer.from(await result.arrayBuffer())
+    expect(buffer.length).toBeGreaterThan(0)
+
+    writeFileSync(join(__dirname, 'testoutput/unterrichtsablauf.docx'), buffer)
   })
 
   it('should generate DOCX from Arbeitsblatt', async () => {
