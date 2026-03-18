@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Cookies from 'js-cookie'
 import {
   GeminiClient,
   UnterrichtsablaufGenerator,
@@ -24,13 +23,17 @@ import {
   Trash2,
   Check,
   ChevronRight,
+  Lock,
 } from 'lucide-react'
+import { encryptData, decryptData, type EncryptedData } from './lib/crypto'
 
-const COOKIE_NAME = 'gemini_api_key'
+const STORAGE_KEY = 'gemini_api_key_data'
 
 export default function UnterrichtsPlaner() {
   const [apiKey, setApiKey] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
   const [isApiKeySet, setIsApiKeySet] = useState<boolean>(false)
+  const [requiresPassword, setRequiresPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,11 +59,20 @@ export default function UnterrichtsPlaner() {
   const wsGeneratorRef = useRef<ArbeitsblattGenerator | null>(null)
 
   useEffect(() => {
-    const savedKey = Cookies.get(COOKIE_NAME)
-    if (savedKey) {
-      setApiKey(savedKey)
-      setIsApiKeySet(true)
-      initGenerators(savedKey)
+    const savedData = localStorage.getItem(STORAGE_KEY)
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData) as EncryptedData
+        if (!parsed.encrypted) {
+          setApiKey(parsed.data)
+          setIsApiKeySet(true)
+          initGenerators(parsed.data)
+        } else {
+          setRequiresPassword(true)
+        }
+      } catch (e) {
+        console.error('Fehler beim Laden der API-Key-Daten', e)
+      }
     }
   }, [])
 
@@ -75,17 +87,47 @@ export default function UnterrichtsPlaner() {
     }
   }
 
-  const handleSetApiKey = () => {
+  const handleSetApiKey = async () => {
     if (!apiKey.trim()) return
-    Cookies.set(COOKIE_NAME, apiKey, { expires: 30 })
-    setIsApiKeySet(true)
-    initGenerators(apiKey)
+    setLoading(true)
+    setError(null)
+    try {
+      const encrypted = await encryptData(apiKey, password)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(encrypted))
+      setIsApiKeySet(true)
+      initGenerators(apiKey)
+    } catch (e) {
+      setError('Fehler beim Speichern: ' + (e as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUnlock = async () => {
+    const savedData = localStorage.getItem(STORAGE_KEY)
+    if (!savedData) return
+    setLoading(true)
+    setError(null)
+    try {
+      const parsed = JSON.parse(savedData) as EncryptedData
+      const decryptedKey = await decryptData(parsed, password)
+      setApiKey(decryptedKey)
+      setIsApiKeySet(true)
+      setRequiresPassword(false)
+      initGenerators(decryptedKey)
+    } catch {
+      setError('Falsches Passwort oder Fehler beim Entschlüsseln')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleResetApiKey = () => {
-    Cookies.remove(COOKIE_NAME)
+    localStorage.removeItem(STORAGE_KEY)
     setApiKey('')
+    setPassword('')
     setIsApiKeySet(false)
+    setRequiresPassword(false)
     geminiClientRef.current = null
     lpGeneratorRef.current = null
     wsGeneratorRef.current = null
@@ -182,6 +224,68 @@ export default function UnterrichtsPlaner() {
     }
   }
 
+  if (requiresPassword && !isApiKeySet) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="mx-auto w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+              <Lock size={24} />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              API-Key verschlüsselt
+            </h1>
+            <p className="text-gray-500">
+              Bitte gib dein Passwort ein, um den Key zu entsperren.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Passwort
+              </label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleResetApiKey}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-lg transition-colors"
+              >
+                Zurücksetzen
+              </button>
+              <button
+                onClick={handleUnlock}
+                disabled={loading || !password}
+                className="flex-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <RefreshCw className="animate-spin" size={18} />
+                ) : (
+                  'Entsperren'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!isApiKeySet) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
@@ -196,6 +300,16 @@ export default function UnterrichtsPlaner() {
             <p className="text-gray-500">
               Bitte gib deinen Gemini API-Key ein, um zu starten.
             </p>
+            <p className="text-gray-500">
+              Wie du einen API-Key erhältst, kannst du{' '}
+              <a
+                className="text-blue-500 underline"
+                href="https://ai.google.dev/gemini-api/docs/api-key"
+              >
+                in der Dokumentation von Google
+              </a>{' '}
+              nachlesen.
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -205,30 +319,63 @@ export default function UnterrichtsPlaner() {
               </label>
               <input
                 type="password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="AIza..."
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Passwort (optional)
+              </label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Für lokale Verschlüsselung"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Wenn du ein Passwort angibst, wird der Key AES-256 verschlüsselt
+                gespeichert.
+              </p>
+            </div>
+
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
               <AlertTriangle className="text-amber-500 shrink-0" size={20} />
               <div className="text-sm text-amber-800">
-                <p className="font-semibold">Wichtiger Hinweis:</p>
+                <p className="font-semibold">Sicherheitshinweis:</p>
                 <p>
-                  Bitte stelle sicher, dass du Nutzungslimits für deinen API-Key
-                  im Google AI Studio festgelegt hast, um unerwartete Kosten zu
-                  vermeiden.
+                  Dein API-Key wird lokal in deinem Browser gespeichert. Nutze
+                  ein Passwort für zusätzliche Sicherheit.
+                </p>
+                <p>
+                  Verwende einen kostenlosen Key oder setze Nutzungslimits, um
+                  den möglichen Schaden bei einem Missbrauch zu begrenzen.
                 </p>
               </div>
             </div>
 
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             <button
               onClick={handleSetApiKey}
+              disabled={loading || !apiKey}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Starten <ChevronRight size={18} />
+              {loading ? (
+                <RefreshCw className="animate-spin" size={18} />
+              ) : (
+                <>
+                  Starten <ChevronRight size={18} />
+                </>
+              )}
             </button>
           </div>
         </div>
