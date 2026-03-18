@@ -487,19 +487,25 @@ export default function UnterrichtsPlaner() {
                 <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
                   Schulform
                 </label>
-                <select
+                <input
+                  list="schulformen"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                   value={form.schulform}
                   onChange={(e) =>
                     setForm({ ...form, schulform: e.target.value })
                   }
-                >
-                  <option>Gymnasium</option>
-                  <option>Realschule</option>
-                  <option>Hauptschule</option>
-                  <option>Grundschule</option>
-                  <option>Berufsschule</option>
-                </select>
+                  placeholder="z.B. Gymnasium"
+                />
+                <datalist id="schulformen">
+                  <option value="Gymnasium" />
+                  <option value="Oberschule" />
+                  <option value="Realschule" />
+                  <option value="Hauptschule" />
+                  <option value="Grundschule" />
+                  <option value="Berufsschule" />
+                  <option value="Gesamtschule" />
+                  <option value="Förderschule" />
+                </datalist>
               </div>
             </div>
 
