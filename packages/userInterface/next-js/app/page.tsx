@@ -25,10 +25,21 @@ import {
   Check,
   ChevronRight,
   Lock,
+  FilePlus,
 } from 'lucide-react'
 import { encryptData, decryptData, type EncryptedData } from './lib/crypto'
 
 const STORAGE_KEY = 'gemini_api_key_data'
+
+const INITIAL_FORM_STATE = {
+  fach: '',
+  themengebiet: '',
+  zielsetzung: '',
+  dauer: 45,
+  klassengroesse: 25,
+  klassenstufe: 8,
+  schulform: 'Gymnasium',
+}
 
 export default function UnterrichtsPlaner() {
   const [apiKey, setApiKey] = useState<string>('')
@@ -39,15 +50,7 @@ export default function UnterrichtsPlaner() {
   const [error, setError] = useState<string | null>(null)
 
   // Form State
-  const [form, setForm] = useState({
-    fach: '',
-    themengebiet: '',
-    zielsetzung: '',
-    dauer: 45,
-    klassengroesse: 25,
-    klassenstufe: 8,
-    schulform: 'Gymnasium',
-  })
+  const [form, setForm] = useState(INITIAL_FORM_STATE)
 
   // Results State
   const [lessonPlan, setLessonPlan] = useState<Unterrichtsablauf | null>(null)
@@ -132,6 +135,17 @@ export default function UnterrichtsPlaner() {
     geminiClientRef.current = null
     lpGeneratorRef.current = null
     wsGeneratorRef.current = null
+  }
+
+  const handleNewDraft = () => {
+    setForm(INITIAL_FORM_STATE)
+    setLessonPlan(null)
+    setWorksheet(null)
+    setIterationFeedback('')
+    setError(null)
+    if (apiKey) {
+      initGenerators(apiKey)
+    }
   }
 
   const generateLessonPlan = async () => {
@@ -396,13 +410,22 @@ export default function UnterrichtsPlaner() {
               Unterrichtsplaner
             </span>
           </div>
-          <button
-            onClick={handleResetApiKey}
-            className="text-gray-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
-            title="API Key zurücksetzen"
-          >
-            <Trash2 size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleNewDraft}
+              className="text-gray-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
+              title="Neuer Entwurf"
+            >
+              <FilePlus size={20} />
+            </button>
+            <button
+              onClick={handleResetApiKey}
+              className="text-gray-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
+              title="API Key zurücksetzen"
+            >
+              <Trash2 size={20} />
+            </button>
+          </div>
         </div>
       </header>
 
