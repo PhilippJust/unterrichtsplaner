@@ -449,6 +449,7 @@ export default function UnterrichtsPlaner() {
                   value={form.fach}
                   onChange={(e) => setForm({ ...form, fach: e.target.value })}
                   placeholder="z.B. Deutsch"
+                  required
                 />
                 <datalist id="faecher">
                   <option value="Deutsch" />
@@ -478,6 +479,7 @@ export default function UnterrichtsPlaner() {
                 <input
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   value={form.themengebiet}
+                  required
                   onChange={(e) =>
                     setForm({ ...form, themengebiet: e.target.value })
                   }
@@ -491,6 +493,7 @@ export default function UnterrichtsPlaner() {
                 <textarea
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"
                   value={form.zielsetzung}
+                  required
                   onChange={(e) =>
                     setForm({ ...form, zielsetzung: e.target.value })
                   }
@@ -503,6 +506,7 @@ export default function UnterrichtsPlaner() {
                     Dauer (Min)
                   </label>
                   <input
+                    required
                     type="number"
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     value={form.dauer}
@@ -519,6 +523,7 @@ export default function UnterrichtsPlaner() {
                     type="number"
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     value={form.klassenstufe}
+                    required
                     onChange={(e) =>
                       setForm({
                         ...form,
@@ -536,6 +541,7 @@ export default function UnterrichtsPlaner() {
                   type="number"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   value={form.klassengroesse}
+                  required
                   onChange={(e) =>
                     setForm({
                       ...form,
