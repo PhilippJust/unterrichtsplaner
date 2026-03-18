@@ -163,7 +163,7 @@ export const arbeitsblattToDocx = async (
 
   const loesungsmarkdown = `${arbeitsblatt.varianten
     .map((v) =>
-      v.variante
+      arbeitsblatt.varianten.length > 1 && v.variante
         ? `# Musterlösung ${arbeitsblatt.thema} - ${v.variante}`
         : `# Musterlösung ${arbeitsblatt.thema}` +
           v.aufgaben

@@ -660,11 +660,12 @@ export default function UnterrichtsPlaner() {
                   <div className="p-6 space-y-6">
                     {worksheet.varianten.map((v, i) => (
                       <div key={i} className="space-y-4">
-                        {v.variante && (
+                        {(worksheet.varianten.length > 1 && v.variante && (
                           <h4 className="font-bold border-b pb-1">
                             {v.variante}
                           </h4>
-                        )}
+                        )) ||
+                          null}
                         {v.aufgaben.map((aufg, j) => (
                           <div
                             key={j}

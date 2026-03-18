@@ -84,7 +84,9 @@ export class ArbeitsblattGenerator extends Generator<undefined, Arbeitsblatt> {
 
   protected generatePrompt = () =>
     // Wir rufen das nach der Generierung des Unterrichtsablaufs innerhalb des Kontext-Fensters auf
-    `Erstelle ein Arbeitsblatt inklusive einer Musterlösung für die Unterrichtseinheit.
+    `Erstelle ein Arbeitsblatt inklusive einer Musterlösung für die erstellte Unterrichtseinheit.
+    Wenn im Unterrichtsablauf auf ein Arbeitsblatt verwiesen wird, MUSS das Arbeitsblatt eine Aufgabe zu diesem Verweis enthalten.
     Es muss nicht jede Phase des Unterrichtsablaufs eine Aufgabe enthalten, kann aber.
-    Achte darauf, den zeitlichen Rahmen nicht zu sprengen.`
+    Achte darauf, den zeitlichen Rahmen nicht zu sprengen.
+    Wenn eine Gruppenarbeit vorgesehen ist, erstelle passende Arbeitsblätter für die Gruppen. Andernfalls genügt eine Variante des Arbeitsblatts.`
 }
