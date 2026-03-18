@@ -420,11 +420,32 @@ export default function UnterrichtsPlaner() {
                   Fach
                 </label>
                 <input
+                  list="faecher"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   value={form.fach}
                   onChange={(e) => setForm({ ...form, fach: e.target.value })}
                   placeholder="z.B. Deutsch"
                 />
+                <datalist id="faecher">
+                  <option value="Deutsch" />
+                  <option value="Mathematik" />
+                  <option value="Englisch" />
+                  <option value="Biologie" />
+                  <option value="Physik" />
+                  <option value="Chemie" />
+                  <option value="Geschichte" />
+                  <option value="Erdkunde" />
+                  <option value="Politik" />
+                  <option value="Kunst" />
+                  <option value="Musik" />
+                  <option value="Sport" />
+                  <option value="Religion" />
+                  <option value="Ethik" />
+                  <option value="Informatik" />
+                  <option value="Spanisch" />
+                  <option value="Französisch" />
+                  <option value="Latein" />
+                </datalist>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
