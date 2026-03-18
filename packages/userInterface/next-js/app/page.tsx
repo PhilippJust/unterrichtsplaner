@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
 import {
   GeminiClient,
   UnterrichtsablaufGenerator,
@@ -677,14 +678,18 @@ export default function UnterrichtsPlaner() {
                                 {aufg.dauer} Min.
                               </span>
                             </div>
-                            <p className="text-gray-700 whitespace-pre-wrap mb-4">
-                              {aufg.aufgabenstellung}
-                            </p>
-                            <div className="text-xs text-gray-500 bg-white p-2 border rounded">
+                            <div className="text-gray-700 mb-4 prose prose-sm max-w-none">
+                              <ReactMarkdown>
+                                {aufg.aufgabenstellung}
+                              </ReactMarkdown>
+                            </div>
+                            <div className="text-xs text-gray-500 bg-white p-2 border rounded prose prose-xs max-w-none">
                               <strong className="block mb-1 text-gray-700">
                                 Musterlösung:
                               </strong>
-                              {aufg.musterloesung}
+                              <ReactMarkdown>
+                                {aufg.musterloesung}
+                              </ReactMarkdown>
                             </div>
                           </div>
                         ))}
@@ -748,7 +753,9 @@ function PhaseDisplay({
             </div>
             <div className="space-y-1">
               <p className="font-semibold text-sm">{a.ziel}</p>
-              <p className="text-sm text-gray-600">{a.beschreibung}</p>
+              <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+                <ReactMarkdown>{a.beschreibung}</ReactMarkdown>
+              </div>
               {a.material && (
                 <p className="text-xs text-gray-400 italic">
                   Material: {a.material}
