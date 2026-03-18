@@ -506,6 +506,22 @@ export default function UnterrichtsPlaner() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                  Klassengröße
+                </label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={form.klassengroesse}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      klassengroesse: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
                   Schulform
                 </label>
                 <input
@@ -688,7 +704,7 @@ export default function UnterrichtsPlaner() {
               )}
             </div>
           ) : (
-            <div className="h-[600px] bg-white rounded-xl shadow-sm border border-dashed flex flex-col items-center justify-center text-gray-400 space-y-4">
+            <div className="h-[100%] bg-white rounded-xl shadow-sm border border-dashed flex flex-col items-center justify-center text-gray-400 space-y-4">
               <div className="p-4 bg-gray-50 rounded-full">
                 <Wand2 size={48} />
               </div>
