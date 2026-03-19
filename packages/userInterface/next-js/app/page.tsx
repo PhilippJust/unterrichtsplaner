@@ -335,7 +335,7 @@ export default function UnterrichtsPlaner() {
               <input
                 type="password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="AIza..."
+                placeholder="Gib hier deinen API-Key ein"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
